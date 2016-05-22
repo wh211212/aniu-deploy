@@ -25,7 +25,7 @@ crontab=/etc/cron.d
 #to determime whether a folder
 [ -f $scripts ] || mkdir -p $scripts
 [ -f $cron ] || mkdir -p $cron
-[ -f $data ] || mkdir -p $cron
+[ -f $data ] || mkdir -p $data
 
 #create discovery disk_name shell
 cat > $scripts/diskname_discovery.sh << 'EOF'
@@ -94,11 +94,11 @@ cat > $crontab/iostat << 'EOF'
 EOF
 chmod 755 $crontab/iostat
 
-pid=`which crontab`
-[ $pid -eq 0 ] || yum -y install cron*
+which crontab >/dev/null
+[ $? -eq 0 ] || yum -y install cron*
 
 #restart crontab daemon
-/etc/init.d/cron restart
+/etc/init.d/crond restart
 
 #modify zabbix_agentd.conf parameter
 sed -i "s/#\ UnsafeUserParameters=0/UnsafeUserParameters=1/g" /opt/zabbix/etc/zabbix_agentd.conf
@@ -124,7 +124,7 @@ UserParameter=io.util[*],/usr/bin/tail /opt/zabbix/data/iostat_data |grep "\b$1\
 EOF
 
 #restart zabbix_agent daemon
-/etc/init.d/zabbix_agent restart
+/etc/init.d/zabbix_agentd restart
 
 #
 retval=`netstat -nltp | grep zabbix | grep -v grep | wc -l`
@@ -153,8 +153,3 @@ if [ $util -gt 1 ];then
        echo dedfine key is not unsupported.
        exit 0
 fi
-    
-
-
-
-
