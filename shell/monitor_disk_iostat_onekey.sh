@@ -17,7 +17,7 @@ zabbix_base=/opt/zabbix
 scripts=$zabbix_base/scripts
 cron=$zabbix_base/cron
 data=$zabbix_base/data
-
+conf=$zabbix_base/conf
 ################################
 #save crontab jobs
 crontab=/etc/cron.d
@@ -26,6 +26,7 @@ crontab=/etc/cron.d
 [ -f $scripts ] || mkdir -p $scripts
 [ -f $cron ] || mkdir -p $cron
 [ -f $data ] || mkdir -p $data
+[ -f $conf ] || mkdir -p $conf
 
 which iostat >/dev/null
 [ $? -eq 0 ] || yum -y install sysstat
@@ -140,7 +141,7 @@ EOF
 #
 sleep 10
 retval=`netstat -nltp | grep zabbix | grep -v grep | wc -l`
-[ $retval -gt 1 ] && echo "zabbix_agent restart succedd" || echo "zabbix_agent restart failed"
+[ $retval -ge 1 ] && echo "zabbix_agent restart succedd" || echo "zabbix_agent restart failed"
 
 #local test defined key weather useful
 $zabbix_base/bin/zabbix_get -s 127.0.0.1 -p 10050 -k disk.name.discovery >$data/disk_name.txt
@@ -155,13 +156,20 @@ fi
 sleep 10
 grep DISK_NAME $data/disk_name.txt | awk -F'["]' '{print $4}' >$data/disk_list.txt
 
-for name in $data/disk_list.txt
-         do 
-         $zabbix_base/bin/zabbix_get -s 127.0.0.1 -p 10050 -k io.util[$name] > $data/util_data.txt
-         done
-##
+#for name in $data/disk_list.txt
+#         do 
+#         $zabbix_base/bin/zabbix_get -s 127.0.0.1 -p 10050 -k io.util[$name] >> $data/util_data.txt
+#         done
+#
+    while read line
+          do
+          name=`echo $line`
+          $zabbix_base/bin/zabbix_get -s 127.0.0.1 -p 10050 -k io.util[$name] >> $data/util_data.txt
+
+          done < disk_list.txt
+
 util=`cat $data/util_data.txt | wc -l`
-if [ $util -gt 1 ];then
+if [ $util -ge 1 ];then
        echo we defined userparameter is working.
    else
        echo dedfine key is not unsupported.
