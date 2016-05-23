@@ -96,7 +96,7 @@ chmod 755 $cron/iostat_cron.sh
 # zabbix cronjob for application
 #*/2 * * * * /bin/bash /opt/zabbix/cron/iostat_cron.sh
 #EOF
-chmod 755 $crontab/iostat
+#chmod 755 $crontab/iostat
 
 which crontab >/dev/null
 [ $? -eq 0 ] || yum -y install cron*
@@ -104,12 +104,16 @@ which crontab >/dev/null
 #add cron daemon
 echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' | crontab -
 
+#gather data for test
+/bin/bash $cron/iostat_cron.sh
+
 #restart crontab daemon
 /etc/init.d/crond restart
 
 #modify zabbix_agentd.conf parameter
-sed -i "s/#\ UnsafeUserParameters=0/UnsafeUserParameters=1/g" /opt/zabbix/etc/zabbix_agentd.conf
-sed -i "s/# Include=\/usr\/local\/etc\/zabbix_agentd.conf.d/Include=\/opt\/zabbix\/etc\/zabbix_agentd.conf.d/" /opt/zabbix/etc/zabbix_agentd.conf
+#sed -i "s/#\ UnsafeUserParameters=0/UnsafeUserParameters=1/g" /opt/zabbix/etc/zabbix_agentd.conf
+
+#sed -i "s/# Include=\/usr\/local\/etc\/zabbix_agentd.conf.d/Include=\/opt\/zabbix\/etc\/zabbix_agentd.conf.d/" /opt/zabbix/etc/zabbix_agentd.conf
 #
 
 #create userparamter file,
@@ -134,8 +138,9 @@ EOF
 /etc/init.d/zabbix_agentd restart
 
 #
+sleep 10
 retval=`netstat -nltp | grep zabbix | grep -v grep | wc -l`
-[ $retval -gt 1 ] && echo "zabbix_agent restart succedd"
+[ $retval -gt 1 ] && echo "zabbix_agent restart succedd" || echo "zabbix_agent restart failed"
 
 #local test defined key weather useful
 $zabbix_base/bin/zabbix_get -s 127.0.0.1 -p 10050 -k disk.name.discovery >$data/disk_name.txt
@@ -146,13 +151,15 @@ if [ $? -eq 0 ];then
        exit 0
 fi
 
-#
+##
+sleep 10
 grep DISK_NAME $data/diskname.txt | awk -F'["]' '{print $4}' >$data/disk_list.txt
 
 for name in $data/disk_list.txt
          do 
          $zabbix_base/bin/zabbix_get -s 127.0.0.1 -p 10050 -k io.util[$name] > $data/util_data.txt
          done
+##
 util=`cat $data/util_data.txt | wc -l`
 if [ $util -gt 1 ];then
        echo we defined userparameter is working.
