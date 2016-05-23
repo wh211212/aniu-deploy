@@ -27,6 +27,10 @@ crontab=/etc/cron.d
 [ -f $cron ] || mkdir -p $cron
 [ -f $data ] || mkdir -p $data
 
+which iostat >/dev/null
+[ $? -eq 0 ] || yum -y install sysstat
+[ $? -eq 0 ] || echo "yum sysstat failed"
+
 #create discovery disk_name shell
 cat > $scripts/diskname_discovery.sh << 'EOF'
 #!/bin/bash
@@ -88,14 +92,17 @@ EOF
 chmod 755 $cron/iostat_cron.sh
 
 #create crontab daemon
-cat > $crontab/iostat << 'EOF'
+#cat > $crontab/iostat << 'EOF'
 # zabbix cronjob for application
-*/2 * * * * /bin/bash /opt/zabbix/cron/iostat_cron.sh
-EOF
+#*/2 * * * * /bin/bash /opt/zabbix/cron/iostat_cron.sh
+#EOF
 chmod 755 $crontab/iostat
 
 which crontab >/dev/null
 [ $? -eq 0 ] || yum -y install cron*
+
+#add cron daemon
+echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' | crontab -
 
 #restart crontab daemon
 /etc/init.d/crond restart

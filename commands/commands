@@ -1,0 +1,25 @@
+#!/bin/bash
+############################################
+#Commonly used command summary
+#auther:wh
+##################################
+#contact:
+#    -- wh211212@qq.com
+##################################
+# changelog:
+#  2016-05-22    vv    initial creation
+##################################
+
+#Output specified row
+awk '{if(NR==3)print}' <file>
+
+#Display CPU idle and usage time
+grep "cpu " /proc/stat | awk -F ' ' '{total = $2 + $3 + $4 + $5} END {print "idle \t used\n" $5*100/total "% " $2*100/total "%"}' 
+
+#Using sed to add Cron
+crontab -l | sed -e '$G;$s-$-'" *\/1 * "' * * * /opt/zabbix/cron/iostat_cron.sh >/dev/null 2>&1-' | crontab -
+
+crontab -l | sed '$a*/5 * * * * /opt/zabbix/cron/iostat_cron.sh' | crontab –
+
+echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' | crontab -
+
