@@ -156,6 +156,7 @@ fi
 sleep 10
 grep DISK_NAME $data/disk_name.txt | awk -F'["]' '{print $4}' >$data/disk_list.txt
 
+#cd /opt/zabbix
 #for name in $data/disk_list.txt
 #         do 
 #         $zabbix_base/bin/zabbix_get -s 127.0.0.1 -p 10050 -k io.util[$name] >> $data/util_data.txt
@@ -166,7 +167,7 @@ grep DISK_NAME $data/disk_name.txt | awk -F'["]' '{print $4}' >$data/disk_list.t
           name=`echo $line`
           $zabbix_base/bin/zabbix_get -s 127.0.0.1 -p 10050 -k io.util[$name] >> $data/util_data.txt
 
-          done < disk_list.txt
+          done < /opt/zabbix/data/disk_list.txt
 
 util=`cat $data/util_data.txt | wc -l`
 if [ $util -ge 1 ];then
