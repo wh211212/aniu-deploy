@@ -153,7 +153,7 @@ fi
 
 ##
 sleep 10
-grep DISK_NAME $data/diskname.txt | awk -F'["]' '{print $4}' >$data/disk_list.txt
+grep DISK_NAME $data/disk_name.txt | awk -F'["]' '{print $4}' >$data/disk_list.txt
 
 for name in $data/disk_list.txt
          do 
