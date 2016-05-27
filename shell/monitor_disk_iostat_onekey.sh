@@ -109,6 +109,7 @@ echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' | crontab -
 /bin/bash $cron/iostat_cron.sh
 
 #restart crontab daemon
+echo "restart crond daemon..."
 /etc/init.d/crond restart
 
 #modify zabbix_agentd.conf parameter
@@ -136,6 +137,7 @@ UserParameter=io.util[*],/usr/bin/tail /opt/zabbix/data/iostat_data |grep "\b$1\
 EOF
 
 #restart zabbix_agent daemon
+echo "restart zabbix_agentd daemon,please waiting..."
 /etc/init.d/zabbix_agentd restart
 
 #

@@ -23,3 +23,83 @@ crontab -l | sed '$a*/5 * * * * /opt/zabbix/cron/iostat_cron.sh' | crontab –
 
 echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' | crontab -
 
+#清空文件
+>file.txt
+
+#备份分区
+cd /mnt/old && tar cvf - . | (cd /mnt/new && tar xvf -)
+
+#杀死某个链接得进程
+lsof -i tcp:22 | grep 192.168.10.10 | awk "{print $2}" |xargs kill
+
+#显示可执行文件
+ls -F | grep '*$'
+
+#删除空目录
+find ./ -empty -type d -delete
+
+#去除x属性(除了目录)
+find . -type f | while read f; do chmod -x "$f"; done
+
+#清空文件然后马上 tail
+(> errors.log) && tail -f !^
+
+#找到前20大的文件
+find . -type f -print0 | xargs -0 du -h | sort -hr | head -20 
+
+#显示硬件配置信息
+sudo dmidecode | more
+
+#获取当前的svn修订号
+svbversion . get the revision number of your svn working copy
+
+#给grep加上颜色
+export GREP_OPTIONS='--color=auto' 
+
+#计算n!
+echo $(( $(echo 1 "* "{2..10}) )) 
+
+#查看符号链接的目标
+lsli() { ls -l --color "$@" | awk '{ for(i=9;i<NF;i++){ printf("%s ",$i) } printf("%s\n",$NF) }'; }
+
+#查看apache日志里最多的25个ip
+cat $(ls -tr | tail -1) | awk '{ a[$1] += 1; } END { for(i in a) printf("%d, %s\n", a[i], i ); }' | sort -n  | tail -25 
+
+#给文件名加前缀
+for i in *; do mv $i prependtext$i; done
+
+#带进度条的复制文件
+pv file1 > file2
+
+#清理某个用户的进程
+ps -ef | grep $USERNAME | awk {'print $2'} | xargs kill [-9] 
+
+#使用 find sed 批量重命名
+find . -exec bash -c "mv '{}' '\`echo {} |sed -e 's/foo/bar/g'\`" \
+
+#当调试网络应用时，在一行命令中每隔5秒检查CLOSE_WAIT和TIME_WAIT连接
+while true; do netstat -a|grep WAIT|wc -l; sleep 5; done
+
+#批量修改文件编码，从ISO-8859-1修改为utf-8
+find . -name "*.php" -exec iconv -f ISO-8859-1 -t UTF-8 {} -o ../newdir_utf8/{} \; Batch convert files to utf-8
+
+#用连字符取代文件名里的空格
+for f in * ; do mv "$f" $( echo $f | tr ' ' '-' ) ; done
+
+#把文件名中的空格替换成下划线
+ls -1 | rename 's/\ /_/'
+
+#获取文件的绝对路径
+realpath -s <filename> 
+
+#监控命令结果变化
+watch -n 2 command
+
+#让tail自动带上输出时间
+tail -f file | ts '%H:%M:%.S' 
+
+#带有时间的 vmstat
+vmstat 1 | awk '{now=strftime("%Y-%m-%d %T "); print now $0}' 
+
+#按内存使用量排序
+ps aux --sort -rss | head
