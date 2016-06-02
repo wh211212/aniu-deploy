@@ -103,8 +103,8 @@ which crontab >/dev/null
 [ $? -eq 0 ] || yum -y install cron*
 
 #add cron daemon
-echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' | crontab -
-
+#echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' | crontab -
+echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' >> /var/spool/cron
 #gather data for test
 /bin/bash $cron/iostat_cron.sh
 
