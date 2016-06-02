@@ -2,14 +2,14 @@
 #########################################
 # Author:  wh
 # function: install zabbix server one key
-# set -xv
+# set -xv: debug
 # conntact
 #    -- wh211212@qq.com
 #########################################
 # changelog:
 #  2016-05-01    vv    initial creation
 #########################################
-server="192.168.5.5"       #
+server="192.168.0.48"       
 version="zabbix-3.0.1"
 package=/usr/local/src
 zblog=/var/log/zabbix
@@ -70,7 +70,6 @@ sed -i "s#BASEDIR=/usr/local#BASEDIR=/opt/zabbix#g" /etc/init.d/zabbix_agentd
 #softlink
 ln -s /opt/zabbix/bin/zabbix_get /usr/bin/
 ln -s /opt/zabbix/bin/zabbix_sender /usr/bin/
-ln -s /opt/zabbix/sbin/zabbix_agentd /usr/sbin/
 #service port add
 cat >>/etc/services <<EOF
 zabbix-agent 10050/tcp         #Zabbix Agent
