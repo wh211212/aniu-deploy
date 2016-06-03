@@ -104,7 +104,7 @@ which crontab >/dev/null
 
 #add cron daemon
 #echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' | crontab -
-echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' >> /var/spool/cron
+echo '*/2 * * * * /opt/zabbix/cron/iostat_cron.sh' >> /var/spool/cron/root
 #gather data for test
 /bin/bash $cron/iostat_cron.sh
 

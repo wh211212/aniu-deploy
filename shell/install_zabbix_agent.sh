@@ -8,15 +8,17 @@
 #########################################
 # changelog:
 #  2016-05-01    vv    initial creation
-#########################################
+########################################
+#set define variable
+########################################
 server="192.168.0.48"       
 version="zabbix-3.0.1"
 package=/usr/local/src
 zblog=/var/log/zabbix
 zbpid=/opt/zabbix/pid
-
+########################################
 #install gcc
-yum -y install gcc gcc-c++ openssh-clients net-snmp*  
+yum -y install gcc gcc-c++ openssh-clients net-snmp* wget
  if [ $? -eq 0 ];then
     echo "yum install successed"
   else
@@ -87,9 +89,7 @@ sed -i "s/#\ UnsafeUserParameters=0/UnsafeUserParameters=1/g" /opt/zabbix/etc/za
 #start zabbix_agentd
 #chkconfig add zabbix_agentd
 chkconfig zabbix_agentd on
-chkconfig zabbix_server on
 /etc/init.d/zabbix_agentd restart
-/etc/init.d/zabbix_server restart
 #netstat -nltp | grep --color zabbix
 revtel=`netstat -nltp | grep zabbix | grep -v grep | wc -l` 
 if [ $revtel -eq 0 ];then
