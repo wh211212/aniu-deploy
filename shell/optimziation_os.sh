@@ -52,7 +52,7 @@ set_timezone()
 
 #update os
 update(){
-    yum -y update $$ yum -y install wget
+    yum -y update &&  yum -y install wget 
 # change yum source   
 #    cd /etc/yum.repos.d/
 #    mkdir bak
@@ -88,9 +88,11 @@ cat >> /etc/security/limits.conf <<EOF
 * soft nofile 8192
 * hard nofile 8192
 EOF
+#ulimit -n 8192
 echo "ulimit -SHn 65535" >> /etc/rc.local
 }
 
+ulimit -n 8192
 #Shut off system service
 
 stop_server()
@@ -151,6 +153,7 @@ main(){
     check_hosts
     set_timezone
     selinux
+    update
     limits_config
     stop_server
     sshd_config

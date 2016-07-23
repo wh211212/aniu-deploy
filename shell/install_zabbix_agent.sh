@@ -18,6 +18,9 @@ zblog=/var/log/zabbix
 zbpid=/opt/zabbix/pid
 ########################################
 #install gcc
+echo ""
+echo "yum some necessary packages"
+echo ""
 yum -y install gcc gcc-c++ openssh-clients net-snmp* wget
  if [ $? -eq 0 ];then
     echo "yum install successed"
@@ -26,6 +29,9 @@ yum -y install gcc gcc-c++ openssh-clients net-snmp* wget
     exit 2
  fi
 #create zabbix group if not exists  
+echo ""
+echo "create zabbix user && group"
+echo ""
 egrep "^zabbix" /etc/group >& /dev/null  
  if [ $? -ne 0 ]  
  then  
@@ -39,6 +45,9 @@ egrep "^zabbix" /etc/passwd >& /dev/null
  fi 
 #wget zabbix.tar.gz
 #scp -P 22 root@192.168.1.154:$package/$version.tar.gz $package
+echo ""
+echo "wget zabbix packages from sourceforge.net,or,you can wget from repo"
+echo ""
 wget -P ${package} -c http://sourceforge.net/projects/zabbix/files/ZABBIX%20Latest%20Stable/3.0.1/zabbix-3.0.1.tar.gz
  if [ -e "$package/$version.tar.gz" ]; then
    echo "wget is successed"
@@ -46,7 +55,10 @@ wget -P ${package} -c http://sourceforge.net/projects/zabbix/files/ZABBIX%20Late
    echo "wget is failed"
    exit 2
  fi
+###########################################################################################
 #compile zabbix
+echo "compile zabbix && enable-agent"
+echo ""
 cd $package
 tar -zxvf $version.tar.gz
 cd $package/$version
@@ -60,6 +72,7 @@ if [ $? -eq 0 ];
   echo "Installation failed"
   exit 2
 fi
+############################################################################################
 #define log path
 mkdir -p $zblog
 mkdir -p $zbpid
@@ -79,7 +92,9 @@ zabbix-agent 10050/udp         #Zabbix Agent
 zabbix-trapper 10051/tcp       #Zabbix Trapper
 zabbix-trapper 10051/udp       #Zabbix Trapper
 EOF
+############################################################################################
 #edit zabbix_agentd.conf file
+echo "edit zabbix_agentd.conf"
 sed -i "s/Server\=127.0.0.1/Server=127.0.0.1,$server/g" /opt/zabbix/etc/zabbix_agentd.conf
 sed -i "s#tmp/zabbix_agentd.log#var/log/zabbix/zabbix_agentd.log#g" /opt/zabbix/etc/zabbix_agentd.conf
 sed -i "s#tmp/zabbix_agentd.pid#opt/zabbix/pid/zabbix_agentd.pid#g" /opt/zabbix/etc/zabbix_agentd.conf
@@ -97,3 +112,6 @@ if [ $revtel -eq 0 ];then
  else
     echo "zabbix_server install failed"
 fi
+echo "+------------------------------------------------------------------------+"
+echo "|      Congratulations Zabbix-agentd install all completed !!!           |"
+echo "+------------------------------------------------------------------------+"
