@@ -20,18 +20,20 @@ echo "+------------------------------------------------------------------------+
 
 #check host && network
 check_hosts()
-{
+{   
+    hostname=`hostname`
     if grep -Eqi '^127.0.0.1[[:space:]]*localhost' /etc/hosts; then
         echo "Hosts: ok."
     else
-        echo "127.0.0.1 localhost.localdomain localhost" >> /etc/hosts
+        echo "127.0.0.1 localhost.localdomain $hostname" >> /etc/hosts
     fi
     ping -c1 www.aniu.tv
     if [ $? -eq 0 ] ; then
         echo "DNS...ok"
+        echo "nameserver 8.8.8.8" >> /etc/resolv.conf
     else
         echo "DNS...fail"
-        echo -e "nameserver 202.96.209.133\nnameserver 202.96.209.6\nnameserver 114.114.114.114" > /etc/resolv.conf
+        echo -e "nameserver 8.8.8.8\nnameserver 114.114.114.114" > /etc/resolv.conf
     fi
 }
 
@@ -45,6 +47,7 @@ set_timezone()
 
     #install ntp
     echo "[+] Installing ntp..."
+    yum install ntpdate -y
     /usr/sbin/ntpdate pool.ntp.org
     echo '*/5 * * * * /usr/sbin/ntpdate pool.ntp.org > /dev/null 2>&1' > /var/spool/cron/root;chmod 600 /var/spool/cron/root
     /sbin/service crond restart
@@ -52,7 +55,7 @@ set_timezone()
 
 #update os
 update(){
-    yum -y update &&  yum -y install wget 
+    yum -y update 
 # change yum source   
 #    cd /etc/yum.repos.d/
 #    mkdir bak
@@ -60,13 +63,13 @@ update(){
 #    wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
 #    wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-6.repo
 #    yum clean all && yum makecache
-    yum -y install vim unzip  openssl-client gcc gcc-c++ ntp sysstat iotop openssh-clients telnet lsof
+    yum -y install wget vim unzip openssl-devel gcc gcc-c++ sysstat iotop openssh-clients telnet lsof
     echo "yum update && yum install common command ......... succeed."
 }
 
 selinux()
 {
-       sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+       sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
        setenforce 0
        echo "disbale selinux ..................succeed."
 }
@@ -125,8 +128,8 @@ iptables(){
    /etc/init.d/iptables stop
    chkconfig --level 3 iptables off
    #disable ipv6
-   echo "alias net-pf-10 off" >> /etc/modprobe.conf
-   echo "alias ipv6 off" >> /etc/modprobe.conf
+   echo "alias net-pf-10 off" >> /etc/modprobe.d/modprobe.conf
+   echo "alias ipv6 off" >> /etc/modprobe.d/modprobe.conf
    echo "NETWORKING_IPV6=no" >> /etc/sysconfig/network
    chkconfig --level 3 ip6tables off
    /etc/init.d/ip6tables stop
@@ -139,16 +142,54 @@ sed -i 's/^id:.*$/id:3:initdefault:/' /etc/inittab
 /sbin/init q
 # PS1
 #echo 'PS1="\[\e[37;40m\][\[\e[32;40m\]\u\[\e[37;40m\]@\h \[\e[35;40m\]\W\[\e[0m\]]\\$ \[\e[33;40m\]"' >> /etc/profile
- 
+echo "TMOUT=7200" >> /etc/profile 
 # Record command
-sed -i 's/^HISTSIZE=.*$/HISTSIZE=500/' /etc/profile
+sed -i 's/^HISTSIZE=.*$/HISTSIZE=1000/' /etc/profile
 #echo "export PROMPT_COMMAND='{ msg=\$(history 1 | { read x y; echo \$y; });user=\$(whoami); echo \$(date \"+%Y-%m-%d %H:%M:%S\"):\$user:\`pwd\`/:\$msg ---- \$(who am i); } >> /tmp/\`hostname\`.\`whoami\`.history-timestamp'" >> /root/.bash_profile
  
 # wrong password five times locked 180s
 sed -i '4a auth        required      pam_tally2.so deny=5 unlock_time=180' /etc/pam.d/system-auth
+
+# forbiden ctl-alt-delete
+sed -i 's/exec \/sbin\/shutdown -r now \"Control-Alt-Delete pressed"/\#exec \/sbin\/shutdown -r now \"Control-Alt-Delete pressed"/g' /etc/init/control-alt-delete.conf
+
 source /etc/profile
 }
 
+#
+delete_user()
+{
+# delete no use user 
+echo "delete not use user"
+echo ""
+for user in adm lp sync shutdown halt uucp operator gopher 
+do userdel $user ; done
+}
+
+#
+sysctl()
+{
+cat >> /etc/sysctl.conf << 'EOF'
+
+# appends
+net.ipv4.tcp_synack_retries = 0
+net.ipv4.tcp_syn_retries = 0
+net.ipv4.tcp_max_syn_backlog = 20480
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 1
+net.ipv4.tcp_fin_timeout = 10
+fs.file-max = 819200
+net.core.somaxconn = 65536
+net.core.rmem_max = 1024123000
+net.core.wmem_max = 16777216
+net.core.netdev_max_backlog = 165536
+net.ipv4.ip_local_port_range = 10000 65535
+EOF
+# set kernel parameters work
+sysctl -p
+}
+#main function
 main(){
     check_hosts
     set_timezone
@@ -159,8 +200,12 @@ main(){
     sshd_config
     iptables
     other
+    delete_user
+    sysctl
 }
+# execute main functions
 main
+
 echo "+------------------------------------------------------------------------+"
 echo "|            To initialization system all completed !!!                  |"
 echo "+------------------------------------------------------------------------+"

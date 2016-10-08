@@ -12,7 +12,7 @@
 #set define variable
 ########################################
 server="192.168.0.48"       
-version="zabbix-3.0.1"
+version="zabbix-3.0.4"
 package=/usr/local/src
 zblog=/var/log/zabbix
 zbpid=/opt/zabbix/pid
@@ -45,10 +45,13 @@ egrep "^zabbix" /etc/passwd >& /dev/null
  fi 
 #wget zabbix.tar.gz
 #scp -P 22 root@192.168.1.154:$package/$version.tar.gz $package
+#echo ""
+#echo "wget zabbix packages from sourceforge.net,or,you can wget from repo"
+#echo ""
+#wget -P ${package} -c http://sourceforge.net/projects/zabbix/files/ZABBIX%20Latest%20Stable/3.0.1/zabbix-3.0.1.tar.gz
 echo ""
-echo "wget zabbix packages from sourceforge.net,or,you can wget from repo"
-echo ""
-wget -P ${package} -c http://sourceforge.net/projects/zabbix/files/ZABBIX%20Latest%20Stable/3.0.1/zabbix-3.0.1.tar.gz
+echo "scp zabbix package from zabbix_server"
+scp -P54077 192.168.0.72:$package/$version.tar.gz $package
  if [ -e "$package/$version.tar.gz" ]; then
    echo "wget is successed"
  else
