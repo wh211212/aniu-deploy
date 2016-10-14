@@ -4,7 +4,7 @@
 #         Initialization CentOS 6.x script
 #################################################
 #  Changelog
-#   20160601       wh           initial creation
+#   20160601       shaonbean           initial creation
 #################################################
 #   Auther: hwang@aniu.tv
 ################################################# 
@@ -167,13 +167,10 @@ do userdel $user ; done
 }
 
 #
-sysctl()
-{
-cat >> /etc/sysctl.conf << 'EOF'
-
+sysctl_add(){
+cat >> /etc/sysctl.conf << EOF
 # appends
 net.ipv4.tcp_synack_retries = 0
-net.ipv4.tcp_syn_retries = 0
 net.ipv4.tcp_max_syn_backlog = 20480
 net.ipv4.tcp_syncookies = 1
 net.ipv4.tcp_tw_reuse = 1
@@ -201,7 +198,7 @@ main(){
     iptables
     other
     delete_user
-    sysctl
+    sysctl_add   
 }
 # execute main functions
 main
