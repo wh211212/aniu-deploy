@@ -144,7 +144,7 @@ sed -i 's/^id:.*$/id:3:initdefault:/' /etc/inittab
 #echo 'PS1="\[\e[37;40m\][\[\e[32;40m\]\u\[\e[37;40m\]@\h \[\e[35;40m\]\W\[\e[0m\]]\\$ \[\e[33;40m\]"' >> /etc/profile
 echo "TMOUT=7200" >> /etc/profile 
 # Record command
-sed -i 's/^HISTSIZE=.*$/HISTSIZE=1000/' /etc/profile
+sed -i 's/^HISTSIZE=.*$/HISTSIZE=100/' /etc/profile
 #echo "export PROMPT_COMMAND='{ msg=\$(history 1 | { read x y; echo \$y; });user=\$(whoami); echo \$(date \"+%Y-%m-%d %H:%M:%S\"):\$user:\`pwd\`/:\$msg ---- \$(who am i); } >> /tmp/\`hostname\`.\`whoami\`.history-timestamp'" >> /root/.bash_profile
  
 # wrong password five times locked 180s
@@ -153,6 +153,8 @@ sed -i '4a auth        required      pam_tally2.so deny=5 unlock_time=180' /etc/
 # forbiden ctl-alt-delete
 sed -i 's/exec \/sbin\/shutdown -r now \"Control-Alt-Delete pressed"/\#exec \/sbin\/shutdown -r now \"Control-Alt-Delete pressed"/g' /etc/init/control-alt-delete.conf
 
+# 
+echo "1" /proc/sys/net/ipv4/icmp_echo_ignore_all
 source /etc/profile
 }
 
@@ -162,8 +164,13 @@ delete_user()
 # delete no use user 
 echo "delete not use user"
 echo ""
-for user in adm lp sync shutdown halt uucp operator gopher 
+for user in adm lp sync shutdown halt uucp operator gopher news uncp operator
 do userdel $user ; done
+
+for group in adm lp new uncp games dip pppusers popusers slipusers
+do groupdel $group; done
+
+
 }
 
 #
