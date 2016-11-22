@@ -39,7 +39,7 @@ MySQLDUMP () {
     "show tables"|egrep -v "(Tables_in_zabbix|history*|trends*|acknowledges|alerts|auditlog|events|service_alarms)")
     for TABLE_NAME in ${TABLE_NAME_ALL}
     do
-        ${MYSQL_DUMP_BIN_PATH} --opt -u${MySQL_USER} -p${MySQL_PASSWORD} -P${MySQL_PORT} -h${MySQL_HOST} \
+        ${MYSQL_DUMP_BIN_PATH}  -u${MySQL_USER} -p${MySQL_PASSWORD} -P${MySQL_PORT} -h${MySQL_HOST} \
         ${MySQL_DATABASE_NAME} ${TABLE_NAME} >${TABLE_NAME}.sql
         sleep 0.01
     done
