@@ -49,6 +49,7 @@ echo "-----------------------------------------------------"
     /bin/cp $Wget_dir/$Project.war $Project_dir/
     /bin/bash $Project_home/bin/startup.sh
   #  echo "-----------------------------------------------------------------------------------"
+    sleep 3
     tomcat_pid=`ps -ef | grep $Tomcat_port | grep -v grep | awk '{print $2}'`
     if [ $tomcat_pid -ne 0 ];then
        echo "*****************************************************"

@@ -40,13 +40,14 @@ for port in 8082 8083 8084
 #       echo "*******************************************************************************"
 #       echo "*** $Tomcat_port auto shutdown failed,then should force shutdown $Tomcat_port! " 
        ps -ef | grep $Tomcat_port | grep -v grep | awk '{print $2}' | xargs kill -9
-       tomcat_pid=`ps -ef | grep $Tomcat_port | grep -v grep | awk '{print $2}'`
-       /bin/kill -9 tomcat_pid
+#       tomcat_pid=`ps -ef | grep $Tomcat_port | grep -v grep | awk '{print $2}'`
+#       /bin/kill -9 tomcat_pid
   fi
   /bin/rm -rf $Project_dir/$Project*
   /bin/cp $Wget_dir/$Project.war $Project_dir/
   /bin/bash $Project_home/bin/startup.sh
 #  echo "-----------------------------------------------------------------------------------"
+  sleep 2
   tomcat_pid=`ps -ef | grep $Tomcat_port | grep -v grep | awk '{print $2}'`
   if [ $tomcat_pid -ne 0 ];then
      echo "*************************************************"
