@@ -23,6 +23,8 @@ add-user() {
     echo anwg123. | passwd --stdin ${user}
     mkdir -p /home/${user}/{backup,scripts}
     echo "*** user add succeed!  ***"
+    # grant user
+    echo "${user}  ALL=(ALL)       NOPASSWD:ALL" >> /etc/sudoers
   fi
 }
 
