@@ -1,13 +1,15 @@
-#!/bin/bash 
-#################################################
-#  --Info
-#         Initialization CentOS 6.x script
-#################################################
-#  Changelog
-#   20160601       shaonbean           initial creation
-#################################################
-#   Auther: hwang@aniu.tv
-################################################# 
+#!/bin/bash
+#########################################################################
+# Script Name: optimziation_system.sh
+# Author: shaon
+# Email: shaonbean@qq.com
+# Created Time: Fri 30 Dec 2016 10:23:45 AM CST
+#########################################################################
+# Blog address: http://blog.csdn.net/wh211212
+#########################################################################
+# Functions: optimziation system information #
+# 
+# Define some variables:  #
 # Check if user is root
 if [ $(id -u) != "0" ]; then
     echo "Error: You must be root to run this script, please use root to initialization OS"
@@ -18,6 +20,10 @@ echo "+------------------------------------------------------------------------+
 echo "|       To initialization the system for security and performance        |"
 echo "+------------------------------------------------------------------------+"
 
+###############################################################################
+add-user() {
+  
+}
 #check host && network
 check_hosts()
 {   
